@@ -9,16 +9,53 @@ import {
   ChevronDown, 
   ChevronUp, 
   Calendar, 
-  Clock, 
   CheckCircle, 
   AlertCircle,
   Send,
   X
 } from 'lucide-react';
 
-const ManagerDashboard = () => {
+// Type definitions
+type Project = {
+  id: number;
+  name: string;
+  description: string;
+  progress: number;
+  employees: string[];
+};
+
+type TodoResponse = {
+  employee: string;
+  response: string;
+  timestamp: string;
+};
+
+type Todo = {
+  id: number;
+  task: string;
+  department: string;
+  assignedDate: string;
+  responses: TodoResponse[];
+};
+
+type Notification = {
+  id: number;
+  employee: string;
+  message: string;
+  time: string;
+  type: 'info' | 'request' | 'success';
+};
+
+type ManagerInfo = {
+  name: string;
+  department: string;
+  coManager: string;
+  employeeCount: number;
+};
+
+const ManagerDashboard: React.FC = () => {
   // Manager Info
-  const [managerInfo] = useState({
+  const [managerInfo] = useState<ManagerInfo>({
     name: "Sarah Johnson",
     department: "Software Development",
     coManager: "Mike Chen",
@@ -26,7 +63,7 @@ const ManagerDashboard = () => {
   });
 
   // Projects State
-  const [projects, setProjects] = useState([
+  const [projects, setProjects] = useState<Project[]>([
     {
       id: 1,
       name: "E-commerce Platform Redesign",
@@ -51,7 +88,7 @@ const ManagerDashboard = () => {
   ]);
 
   // TODO State
-  const [todos, setTodos] = useState([
+  const [todos, setTodos] = useState<Todo[]>([
     {
       id: 1,
       task: "Review Q2 Performance Reports",
@@ -74,27 +111,34 @@ const ManagerDashboard = () => {
   ]);
 
   // Notifications State
-  const [notifications, setNotifications] = useState([
+  const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, employee: "Alice Smith", message: "Submitted weekly report", time: "2 hours ago", type: "info" },
     { id: 2, employee: "Bob Wilson", message: "Requested time off for next week", time: "4 hours ago", type: "request" },
     { id: 3, employee: "Carol Davis", message: "Completed milestone 3", time: "1 day ago", type: "success" }
   ]);
 
   // Component States
-  const [expandedTodo, setExpandedTodo] = useState(null);
+  const [expandedTodo, setExpandedTodo] = useState<number | null>(null);
   const [showNewProject, setShowNewProject] = useState(false);
   const [showNewTodo, setShowNewTodo] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
   // New Project Form
-  const [newProject, setNewProject] = useState({
+  const [newProject, setNewProject] = useState<{
+    name: string;
+    description: string;
+    employees: string[];
+  }>({
     name: '',
     description: '',
     employees: []
   });
 
   // New TODO Form
-  const [newTodo, setNewTodo] = useState({
+  const [newTodo, setNewTodo] = useState<{
+    task: string;
+    department: string;
+  }>({
     task: '',
     department: ''
   });
@@ -103,7 +147,7 @@ const ManagerDashboard = () => {
   const departments = ["Frontend Team", "Backend Team", "DevOps Team", "Analytics Team", "QA Team"];
 
   // Handle progress change
-  const handleProgressChange = (projectId, newProgress) => {
+  const handleProgressChange = (projectId: number, newProgress: number) => {
     setProjects(projects.map(project => 
       project.id === projectId ? { ...project, progress: newProgress } : project
     ));
@@ -112,7 +156,7 @@ const ManagerDashboard = () => {
   // Handle new project submission
   const handleNewProjectSubmit = () => {
     if (newProject.name && newProject.description) {
-      const project = {
+      const project: Project = {
         id: projects.length + 1,
         name: newProject.name,
         description: newProject.description,
@@ -128,7 +172,7 @@ const ManagerDashboard = () => {
   // Handle new TODO submission
   const handleNewTodoSubmit = () => {
     if (newTodo.task && newTodo.department) {
-      const todo = {
+      const todo: Todo = {
         id: todos.length + 1,
         task: newTodo.task,
         department: newTodo.department,
@@ -142,7 +186,7 @@ const ManagerDashboard = () => {
   };
 
   // Clear notification
-  const clearNotification = (notificationId) => {
+  const clearNotification = (notificationId: number) => {
     setNotifications(notifications.filter(n => n.id !== notificationId));
   };
 
@@ -257,8 +301,8 @@ const ManagerDashboard = () => {
                   </div>
                   <input
                     type="range"
-                    min="0"
-                    max="100"
+                    min={0}
+                    max={100}
                     value={project.progress}
                     onChange={(e) => handleProgressChange(project.id, parseInt(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
@@ -370,7 +414,7 @@ const ManagerDashboard = () => {
                       value={newProject.description}
                       onChange={(e) => setNewProject({...newProject, description: e.target.value})}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      rows="3"
+                      rows={3}
                       required
                     />
                   </div>
@@ -409,7 +453,7 @@ const ManagerDashboard = () => {
                       value={newTodo.task}
                       onChange={(e) => setNewTodo({...newTodo, task: e.target.value})}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      rows="3"
+                      rows={3}
                       required
                     />
                   </div>

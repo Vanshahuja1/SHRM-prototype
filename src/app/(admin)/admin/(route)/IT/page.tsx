@@ -11,12 +11,40 @@ import {
   DollarSign,
   Clock,
   Building,
-  UserCheck,
-  UserX,
   BarChart3,
-  PieChart,
-  Activity
+  Activity,
+  LucideIcon
 } from 'lucide-react';
+
+// Types
+type DepartmentMember = {
+  id: number;
+  name: string;
+  position: string;
+  salary: number;
+  experience: string;
+  joinDate: string;
+};
+
+type Department = {
+  id: number;
+  name: string;
+  managers: number;
+  coManagers: number;
+  employees: number;
+  interns: number;
+  members: DepartmentMember[];
+};
+
+type Project = {
+  name: string;
+  description: string;
+  amount: number;
+  client: string;
+  deadline: string;
+  startDate: string;
+  progress?: number;
+};
 
 // Hero Component
 const Hero = () => {
@@ -38,7 +66,11 @@ const Hero = () => {
 };
 
 // Department Card Component
-const DepartmentCard = ({ department, onViewDetails, onDeleteMember }) => {
+type DepartmentCardProps = {
+  department: Department;
+  onDeleteMember: (deptId: number, memberId: number) => void;
+};
+const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, onDeleteMember }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -113,8 +145,13 @@ const DepartmentCard = ({ department, onViewDetails, onDeleteMember }) => {
 };
 
 // Projects Component
-const ProjectsSection = ({ projects, title, type }) => {
-  const [viewMode, setViewMode] = useState('grid');
+type ProjectsSectionProps = {
+  projects: Project[];
+  title: string;
+  type: 'current' | 'past';
+};
+const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, title, type }) => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   return (
     <motion.div 
@@ -172,7 +209,7 @@ const ProjectsSection = ({ projects, title, type }) => {
               </div>
             </div>
             
-            {type === 'current' && (
+            {type === 'current' && typeof project.progress === 'number' && (
               <div className="mt-3">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
@@ -269,13 +306,27 @@ const HierarchyChart = () => {
 };
 
 // Analytics Dashboard
+type StatColor = 'blue' | 'green' | 'purple' | 'orange';
 const Analytics = () => {
-  const stats = [
+  const stats: {
+    title: string;
+    value: string;
+    change: string;
+    icon: LucideIcon;
+    color: StatColor;
+  }[] = [
     { title: 'Total Employees', value: '247', change: '+12%', icon: Users, color: 'blue' },
     { title: 'Active Projects', value: '18', change: '+5%', icon: Briefcase, color: 'green' },
     { title: 'Monthly Revenue', value: '$2.4M', change: '+18%', icon: TrendingUp, color: 'purple' },
     { title: 'Departments', value: '5', change: '0%', icon: Building, color: 'orange' }
   ];
+
+  const colorClasses: Record<StatColor, string> = {
+    blue: 'bg-blue-50 text-blue-600 border-blue-200',
+    green: 'bg-green-50 text-green-600 border-green-200',
+    purple: 'bg-purple-50 text-purple-600 border-purple-200',
+    orange: 'bg-orange-50 text-orange-600 border-orange-200'
+  };
 
   return (
     <motion.div 
@@ -291,13 +342,6 @@ const Analytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
-          const colorClasses = {
-            blue: 'bg-blue-50 text-blue-600 border-blue-200',
-            green: 'bg-green-50 text-green-600 border-green-200',
-            purple: 'bg-purple-50 text-purple-600 border-purple-200',
-            orange: 'bg-orange-50 text-orange-600 border-orange-200'
-          };
-          
           return (
             <motion.div
               key={index}
@@ -322,7 +366,7 @@ const Analytics = () => {
 
 // Main Dashboard Component
 const AdminDashboard = () => {
-  const [departments, setDepartments] = useState([
+  const [departments, setDepartments] = useState<Department[]>([
     {
       id: 1,
       name: 'IT Development',
@@ -386,7 +430,7 @@ const AdminDashboard = () => {
     }
   ]);
 
-  const currentProjects = [
+  const currentProjects: Project[] = [
     {
       name: 'E-Commerce Platform',
       description: 'Complete redesign and development of the company e-commerce platform with advanced features',
@@ -416,7 +460,7 @@ const AdminDashboard = () => {
     }
   ];
 
-  const pastProjects = [
+  const pastProjects: Project[] = [
     {
       name: 'CRM Integration',
       description: 'Custom CRM integration with existing business processes and third-party APIs',
@@ -435,7 +479,7 @@ const AdminDashboard = () => {
     }
   ];
 
-  const handleDeleteMember = (deptId, memberId) => {
+  const handleDeleteMember = (deptId: number, memberId: number) => {
     setDepartments(prevDepts => 
       prevDepts.map(dept => {
         if (dept.id === deptId) {

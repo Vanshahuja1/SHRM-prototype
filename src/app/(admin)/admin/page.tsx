@@ -32,13 +32,7 @@ export default function HomePage() {
     }, 900); // show loading for at least 900ms
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
+ 
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {

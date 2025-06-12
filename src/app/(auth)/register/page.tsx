@@ -67,7 +67,7 @@ export default function RegisterPage() {
                     <span className="text-purple-900 font-bold text-xl">S</span>
                   </div>
                   <h1 className="text-4xl font-bold mb-4">
-                    We're so glad to have you on board!
+                    We&apos;re so glad to have you on board!
                   </h1>
                   <p className="text-purple-200 text-lg">
                     Join hundreds of thousands of teams in the digital world

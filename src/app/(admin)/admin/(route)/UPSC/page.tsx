@@ -11,12 +11,52 @@ import {
   DollarSign,
   Clock,
   Building,
-  UserCheck,
-  UserX,
   BarChart3,
-  PieChart,
   Activity
 } from 'lucide-react';
+
+// --- TYPES ---
+type DepartmentMember = {
+  id: number;
+  name: string;
+  position: string;
+  salary: number;
+  experience: string;
+  joinDate: string;
+};
+
+type Department = {
+  id: number;
+  name: string;
+  managers: number;
+  coManagers: number;
+  employees: number;
+  interns: number;
+  members: DepartmentMember[];
+};
+
+type Project = {
+  name: string;
+  description: string;
+  amount: number;
+  client: string;
+  deadline: string;
+  startDate: string;
+  progress?: number;
+};
+
+type DepartmentCardProps = {
+  department: Department;
+  onDeleteMember: (deptId: number, memberId: number) => void;
+};
+
+type ProjectsSectionProps = {
+  projects: Project[];
+  title: string;
+  type: 'current' | 'past';
+};
+
+type StatColor = 'blue' | 'green' | 'purple' | 'orange';
 
 // Hero Component
 const Hero = () => (
@@ -34,8 +74,8 @@ const Hero = () => (
   </motion.div>
 );
 
-// Department Card Component (unchanged)
-const DepartmentCard = ({ department, onViewDetails, onDeleteMember }) => {
+// Department Card Component
+const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, onDeleteMember }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -110,12 +150,26 @@ const DepartmentCard = ({ department, onViewDetails, onDeleteMember }) => {
 };
 
 const Analytics = () => {
-  const stats = [
+  const stats: {
+    title: string;
+    value: string;
+    change: string;
+    icon: React.ComponentType<{ size: number }>;
+    color: StatColor;
+  }[] = [
     { title: 'Total Employees', value: '85', change: '+3%', icon: Users, color: 'blue' },
     { title: 'Active Admissions', value: '130', change: '+7%', icon: Briefcase, color: 'green' },
     { title: 'Monthly Revenue', value: '₹12L', change: '+15%', icon: TrendingUp, color: 'purple' },
     { title: 'Departments', value: '5', change: '0%', icon: Building, color: 'orange' }
   ];
+
+  const colorClasses: Record<StatColor, string> = {
+    blue: 'bg-blue-50 text-blue-600 border-blue-200',
+    green: 'bg-green-50 text-green-600 border-green-200',
+    purple: 'bg-purple-50 text-purple-600 border-purple-200',
+    orange: 'bg-orange-50 text-orange-600 border-orange-200'
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -129,12 +183,6 @@ const Analytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
-          const colorClasses = {
-            blue: 'bg-blue-50 text-blue-600 border-blue-200',
-            green: 'bg-green-50 text-green-600 border-green-200',
-            purple: 'bg-purple-50 text-purple-600 border-purple-200',
-            orange: 'bg-orange-50 text-orange-600 border-orange-200'
-          };
           return (
             <motion.div
               key={index}
@@ -241,7 +289,7 @@ const HierarchyChart = () => {
               {dept.subunits.length > 0 && (
                 <div className="w-full">
                   <div className="grid gap-2">
-                    {dept.subunits.map((sub, idx) => (
+                    {dept.subunits.map((sub) => (
                       <div key={sub.name} className="bg-green-50 border border-green-200 p-2 rounded text-center">
                         <p className="text-sm font-medium text-green-800">{sub.name}</p>
                         <p className="text-xs text-green-600">Lead: {sub.head}</p>
@@ -261,7 +309,7 @@ const HierarchyChart = () => {
 // Main Dashboard Component
 const AdminDashboard = () => {
   // Departments tailored for One Aim UPSC
-  const [departments, setDepartments] = useState([
+  const [departments, setDepartments] = useState<Department[]>([
     {
       id: 1,
       name: 'HR',
@@ -331,7 +379,7 @@ const AdminDashboard = () => {
     }
   ]);
 
-  const handleDeleteMember = (deptId, memberId) => {
+  const handleDeleteMember = (deptId: number, memberId: number) => {
     setDepartments(prevDepts => 
       prevDepts.map(dept => {
         if (dept.id === deptId) {
@@ -348,7 +396,7 @@ const AdminDashboard = () => {
   };
 
   // Projects can be omitted or tailored for educational org (example below)
-  const currentProjects = [
+  const currentProjects: Project[] = [
     {
       name: '2025 UPSC Batch Admissions',
       description: 'Managing admissions and onboarding for the incoming UPSC batch.',
@@ -369,7 +417,7 @@ const AdminDashboard = () => {
     }
   ];
 
-  const pastProjects = [
+  const pastProjects: Project[] = [
     {
       name: '2024 Batch Graduation',
       description: 'Completion ceremony and documentation for 2024 batch.',
@@ -414,9 +462,9 @@ const AdminDashboard = () => {
   );
 };
 
-// Projects Section (unchanged except for rupee and context)
-const ProjectsSection = ({ projects, title, type }) => {
-  const [viewMode, setViewMode] = useState('grid');
+// Projects Section
+const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, title, type }) => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -472,7 +520,7 @@ const ProjectsSection = ({ projects, title, type }) => {
               </div>
             </div>
             
-            {type === 'current' && (
+            {type === 'current' && typeof project.progress === 'number' && (
               <div className="mt-3">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
