@@ -95,12 +95,12 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setError("")
-
+     //api call 
     setTimeout(() => {
       setIsLoading(false)
       if (formData.id === "101") router.push("/admin")
-      else if (formData.id === "102") router.push("/manager")
-      else if (formData.id === "103") router.push("/employee")
+      else if (formData.id === "102") router.push("/manager/{id}")
+      else if (formData.id === "103") router.push("/employee/{")
       else setError("Invalid credentials. Try ID: 101, 102, or 103.")
     }, 1500)
   }

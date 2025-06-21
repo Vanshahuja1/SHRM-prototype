@@ -54,7 +54,7 @@ export default function SplashScreen() {
             transition={{
               duration: 4.5,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
             style={{
               background:
