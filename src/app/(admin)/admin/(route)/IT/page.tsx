@@ -1,7 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import DepartmentManagement from "./DepartmentManagement"
+import ProjectManagement from "./ProjectManagement"
+import MemberManagement from "./MemberManagement"
+import OrganizationHierarchy from "./OrganizationHierarchy"
+import TaskManagement from "./TaskManagement"
+import AnalyticsCharts from "./AnalyticsCharts"
+import EmailSystem from "./EmailSystem"
+import Overview from "./Overview"
+import DashboardLayout from "./DashboardLayout"
+import { motion } from "framer-motion"
 import {
   Users,
   Briefcase,
@@ -416,7 +425,7 @@ const TopHeader = ({ activeTab, setIsSidebarOpen }) => {
 }
 
 // Overview Component with Charts
-const Overview = () => {
+const OverviewComponent = () => {
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
@@ -1408,6 +1417,8 @@ const HierarchyView = ({ departments }) => {
               <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-2xl font-bold text-green-600">${selectedDept.budget.toLocaleString()}</p>
                 <p className="text-gray-600 text-sm font-medium">Annual Budget</p>
+                <p className="text-2xl font-bold text-green-600">${selectedDept.budget.toLocaleString()}</p>
+                <p className="text-gray-600 text-sm font-medium">Annual Budget</p>
               </div>
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-2xl font-bold text-blue-600">{selectedDept.managers + selectedDept.coManagers}</p>
@@ -1430,6 +1441,30 @@ const HierarchyView = ({ departments }) => {
 // Main Dashboard Component
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return <Overview />
+      case "departments":
+        return <DepartmentManagement />
+      case "projects":
+        return <ProjectManagement />
+      case "members":
+        return <MemberManagement />
+      case "hierarchy":
+        return <OrganizationHierarchy />
+      case "tasks":
+        return <TaskManagement />
+      case "analytics":
+        return <AnalyticsCharts />
+      case "emails":
+        return <EmailSystem />
+      default:
+        return <Overview />
+    }
+  }
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [departments, setDepartments] = useState(sampleDepartments)
 
@@ -1441,53 +1476,32 @@ export default function AdminDashboard() {
     )
   }
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "overview":
-        return <Overview />
-      case "departments":
-        return <DepartmentsView departments={departments} onDeleteMember={handleDeleteMember} />
-      case "ongoing-projects":
-        return <ProjectsView projects={sampleOngoingProjects} title="Active Projects" type="ongoing" />
-      case "past-projects":
-        return <ProjectsView projects={samplePastProjects} title="Completed Projects" type="past" />
-      case "hierarchy":
-        return <HierarchyView departments={departments} />
-      default:
-        return <Overview />
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <TopHeader activeTab={activeTab} setIsSidebarOpen={setIsSidebarOpen} />
-
-        {/* Main Content */}
-        <main className="flex-1 p-6 overflow-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      </div>
-    </div>
+    <DashboardLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+      {renderContent()}
+    </DashboardLayout>
   )
+}
+
+function renderContent(activeTab: string) {
+  switch (activeTab) {
+    case "overview":
+      return <Overview />
+    case "departments":
+      return <DepartmentManagement />
+    case "projects":
+      return <ProjectManagement />
+    case "members":
+      return <MemberManagement />
+    case "hierarchy":
+      return <OrganizationHierarchy />
+    case "tasks":
+      return <TaskManagement />
+    case "analytics":
+      return <AnalyticsCharts />
+    case "emails":
+      return <EmailSystem />
+    default:
+      return <Overview />
+  }
 }
